@@ -21,6 +21,27 @@ function Login() {
 
   const navigate = useNavigate();
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post("http://localhost:3001/login", {
+        email: inputs.email,
+        password: inputs.password,
+      });
+
+      if (response.data.message === "Success") {
+        localStorage.setItem("email", inputs.email);
+        navigate("/home");
+      } else {
+        setErrors({ ...errors, password: "Invalid credentials" });
+      }
+    } catch (err) {
+      console.error("Login failed:", err);
+      setErrors({ ...errors, email: "An error occurred. Please try again." });
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setInputs((prevState) => ({
@@ -34,31 +55,6 @@ function Login() {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    let formErrors = {};
-    if (!inputs.email) formErrors.email = "Please enter the email";
-    if (!inputs.password) formErrors.password = "Please enter a password";
-
-    if (Object.keys(formErrors).length > 0) {
-      setErrors(formErrors);
-      return;
-    }
-
-    axios
-      .post("http://localhost:3001/login", inputs, { timeout: 5000 })
-      .then((result) => {
-        if (result.data === "Success") {
-          navigate("/home");
-        } else {
-          setErrors({ ...errors, password: "Invalid credentials" });
-        }
-      })
-      .catch((err) => {
-        console.error("Login failed:", err);
-        setErrors({ ...errors, email: "An error occurred. Please try again." });
-      });
-  };
   return (
     <div>
       <form onSubmit={handleSubmit}>

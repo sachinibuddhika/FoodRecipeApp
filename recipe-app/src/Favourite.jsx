@@ -1,11 +1,64 @@
-import * as React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Grid, Box, Typography } from "@mui/material";
+import MealCard from "./MealCard";
 
-function Favourite() {
-  console.log("Favourite page rendered");
+function Favourite({ userId }) {
+  console.log(userId);
+  const [favorites, setFavorites] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const email = localStorage.getItem("email");
+    console.log("Email from localStorage:", email);
+    if (!email) {
+      console.log("User is not logged in");
+      return;
+    }
+
+    axios
+      .get(`http://localhost:3001/getFavorites/${email}`)
+      .then((response) => {
+        console.log("Favorites:", response.data);
+        setFavorites(response.data);
+      })
+      .catch((error) => {
+        console.error(
+          "Error fetching favorites:",
+          error.response ? error.response.data : error.message
+        );
+      });
+  }, []);
+
   return (
-    <div style={{ backgroundColor: "#fef8f9", minHeight: "100vh" }}>
-      <h2>Favourites Page</h2>
-      <p>This is the Favourites page content.</p>
+    <div>
+      <Box sx={{ padding: 4 }}>
+        <Typography variant="h4" gutterBottom>
+          Your Favorites
+        </Typography>
+
+        {favorites.length === 0 ? (
+          <Typography variant="body1">
+            You don't have any favorites yet.
+          </Typography>
+        ) : (
+          <Grid container spacing={4}>
+            {favorites.map((favorite) => (
+              <Grid item xs={12} sm={6} md={4} key={favorite.mealId}>
+                <MealCard
+                  mealName={favorite.mealName}
+                  mealImage={favorite.mealImage}
+                  mealId={favorite.mealId}
+                  category={favorite.category}
+                  userId={favorite.userId}
+                  isFavoriteProp={true}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        )}
+      </Box>
     </div>
   );
 }

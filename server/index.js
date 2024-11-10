@@ -25,7 +25,8 @@ app.post("/login", (req, res) => {
     RecipeModel.findOne({ email: email }).then(user => {
         if (user) {
             if (user.password === password) {
-                res.json("Success");
+               
+                res.json({ message: "Success", userId: user._id });
             } else {
                 res.json("The password is incorrect");
             }
@@ -35,32 +36,45 @@ app.post("/login", (req, res) => {
     });
 });
 
+
 app.post("/addFavorite", async (req, res) => {
-    const { userId, mealId, mealName, mealImage } = req.body;
+    const { email, mealId, mealName, mealImage } = req.body;
+    console.log("Adding favorite:", req.body);  
+
     try {
         const newFavorite = new FavoriteMealModel({
-            userId,
+            email,       
             mealId,
             mealName,
             mealImage,
         });
+
         await newFavorite.save();
         res.json({ message: "Meal added to favorites!" });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Failed to add meal to favorites" });
+        console.error("Error adding favorite:", error);
+        res.status(500).json({ error: "Failed to add meal to favorites", details: error.message });
     }
 });
 
-app.get("/getFavorites/:userId", async (req, res) => {
+
+app.get("/getFavorites/:email", async (req, res) => {
     try {
-        const favorites = await FavoriteMealModel.find({ userId: req.params.userId });
-        res.json(favorites);
+        const email = req.params.email;  
+        console.log("Fetching favorites for email:", email);  
+        const favorites = await FavoriteMealModel.find({ email });  
+
+        if (!favorites || favorites.length === 0) {
+            return res.status(404).json({ message: "No favorites found for this email" });
+        }
+
+        res.json(favorites);  
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "Failed to fetch favorites" });
+        res.status(500).json({ message: "Failed to fetch favorites" });
     }
 });
+
 
 const PORT = process.env.PORT || 3001; 
 app.listen(PORT, () => {

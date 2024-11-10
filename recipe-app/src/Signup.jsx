@@ -53,7 +53,9 @@ function Signup() {
     e.preventDefault();
 
     let formErrors = {};
+
     if (!inputs.fname) formErrors.fname = "Please enter the first name";
+    if (!inputs.lname) formErrors.lname = "Please enter the last name";
     if (!inputs.email) formErrors.email = "Please enter the email";
     if (!inputs.phone) formErrors.phone = "Please enter the phone number";
     if (!inputs.password) formErrors.password = "Please enter a password";
@@ -67,9 +69,24 @@ function Signup() {
     }
 
     axios
-      .post("http://localhost:3001/register", inputs, { timeout: 5000 })
-      .then((result) => console.log(result));
-    navigate("/login").catch((err) => console.log(err));
+      .post("http://localhost:3001/register", {
+        fname: inputs.fname,
+        lname: inputs.lname,
+        email: inputs.email,
+        phone: inputs.phone,
+        password: inputs.password,
+      })
+      .then((response) => {
+        console.log(response.data);
+        navigate("/login");
+      })
+      .catch((error) => {
+        console.error("Error during signup:", error);
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          global: "There was an error during signup. Please try again.",
+        }));
+      });
   };
 
   return (
@@ -125,9 +142,7 @@ function Signup() {
                 name="fname"
                 value={inputs.fname}
                 onChange={handleChange}
-                label="Your Name*"
-                type={"text"}
-                placeholder="First Name"
+                label="First Name*"
                 fullWidth
                 error={!!errors.fname}
                 helperText={errors.fname}
@@ -136,9 +151,8 @@ function Signup() {
                 name="lname"
                 value={inputs.lname}
                 onChange={handleChange}
-                type={"text"}
+                label="Last Name*"
                 fullWidth
-                placeholder="Last Name"
                 error={!!errors.lname}
                 helperText={errors.lname}
               />
@@ -146,10 +160,9 @@ function Signup() {
                 name="email"
                 value={inputs.email}
                 onChange={handleChange}
-                type={"email"}
                 label="Email*"
                 fullWidth
-                placeholder="abc@gmail.com"
+                type="email"
                 error={!!errors.email}
                 helperText={errors.email}
               />
@@ -158,9 +171,8 @@ function Signup() {
                 value={inputs.phone}
                 onChange={handleChange}
                 label="Phone number*"
-                type="number"
                 fullWidth
-                placeholder="011 2222 333"
+                type="tel"
                 error={!!errors.phone}
                 helperText={errors.phone}
               />
@@ -169,9 +181,8 @@ function Signup() {
                 value={inputs.password}
                 onChange={handleChange}
                 label="Password*"
-                type="password"
-                placeholder="******"
                 fullWidth
+                type="password"
                 error={!!errors.password}
                 helperText={errors.password}
               />
@@ -180,9 +191,8 @@ function Signup() {
                 value={inputs.confirmpassword}
                 onChange={handleChange}
                 label="Confirm Password*"
-                type="password"
-                placeholder="******"
                 fullWidth
+                type="password"
                 error={!!errors.confirmpassword}
                 helperText={errors.confirmpassword}
               />

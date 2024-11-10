@@ -9,13 +9,30 @@ import {
 } from "@mui/material";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
+import axios from "axios";
 
-function MealCard({ mealName, mealImage, mealId, category }) {
+function MealCard({ mealName, mealImage, mealId, category, userId }) {
   const [isFavorite, setIsFavorite] = useState(false);
 
   const toggleFavorite = async () => {
     setIsFavorite(!isFavorite);
     console.log("Toggled favourite");
+
+    const email = localStorage.getItem("email");
+
+    if (!isFavorite && email) {
+      try {
+        const response = await axios.post("http://localhost:3001/addFavorite", {
+          email,
+          mealId,
+          mealName,
+          mealImage,
+        });
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error adding to favorites:", error);
+      }
+    }
   };
 
   return (
