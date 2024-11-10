@@ -202,14 +202,15 @@ function Signup() {
                 Create Account
               </Button>
             </Box>
-            <Typography variant="body2" align="center">
-              Already have an Account?{" "}
+            <Typography variant="body2" textAlign="center">
+              Already have an account?{" "}
               <Link
-                to="/login"
                 style={{
                   textDecoration: "none",
+                  fontWeight: "bold",
                   color: "#fe5e7f",
                 }}
+                to="/login"
               >
                 Login
               </Link>

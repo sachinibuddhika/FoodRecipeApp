@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import FilterListToggle from "./FilterListToggle";
-import Navbar from "./Navbar";
 import MealCard from "./MealCard";
+import { CircularProgress, Typography } from "@mui/material";
 
 function Home() {
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState("Chicken");
+  const [meals, setMeals] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const categories = {
     1: { id: 1, value: "Chicken" },
@@ -16,20 +19,26 @@ function Home() {
 
   const categoryArray = Object.values(categories);
 
-  const foodsByCategory = {
-    Chicken: [
-      "Grilled Chicken",
-      "Chicken Wings",
-      "Chicken Salad",
-      "Grilled Chicken",
-      "Chicken Wings",
-      "Chicken Salad",
-    ],
-    Pasta: ["Spaghetti", "Mac n Cheese", "Pasta Alfredo"],
-    Seafood: ["Salmon", "Shrimp Cocktail", "Fish Tacos"],
-    Vegan: ["Vegan Burger", "Tofu Stir Fry", "Vegan Pizza"],
-    Dessert: ["Chocolate Cake", "Ice Cream", "Cupcakes"],
+  const fetchMeals = async (category) => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `https://www.themealdb.com/api/json/v1/1/filter.php?c=${category}`
+      );
+      const data = await response.json();
+      setMeals(data.meals || []);
+    } catch (error) {
+      console.error("Error fetching meals:", error);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    if (selectedCategory) {
+      fetchMeals(selectedCategory);
+    }
+  }, [selectedCategory]);
 
   const handleCategorySelect = (category) => {
     setSelectedCategory(category);
@@ -43,8 +52,14 @@ function Home() {
         selectToggle={handleCategorySelect}
       />
 
-      <div>
-        {selectedCategory && (
+      <div style={{ margin: "30px auto", textAlign: "center" }}>
+        {loading && <CircularProgress />}
+        {error && (
+          <Typography variant="h6" color="error">
+            {error}
+          </Typography>
+        )}{" "}
+        {meals.length > 0 && (
           <div
             style={{
               display: "grid",
@@ -57,10 +72,21 @@ function Home() {
               marginTop: "30px",
             }}
           >
-            {foodsByCategory[selectedCategory]?.map((food, index) => (
-              <MealCard key={index} mealName={food} index={index} />
+            {meals.map((meal) => (
+              <MealCard
+                key={meal.idMeal}
+                mealName={meal.strMeal}
+                mealImage={meal.strMealThumb}
+                mealId={meal.idMeal}
+                category={selectedCategory}
+              />
             ))}
           </div>
+        )}
+        {meals.length === 0 && !loading && !error && (
+          <Typography variant="h6" color="textSecondary">
+            No meals found for the selected category.
+          </Typography>
         )}
       </div>
     </div>
