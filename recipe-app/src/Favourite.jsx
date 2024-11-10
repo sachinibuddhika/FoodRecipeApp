@@ -32,7 +32,7 @@ function Favourite({ userId }) {
   }, []);
 
   return (
-    <div>
+    <div style={{ backgroundColor: "#fef8f9", minHeight: "100vh" }}>
       <Box sx={{ padding: 4, marginLeft: "275px", marginRight: "275px" }}>
         {favorites.length === 0 ? (
           <Typography variant="body1">

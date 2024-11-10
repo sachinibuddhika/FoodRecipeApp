@@ -10,6 +10,7 @@ import {
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import axios from "axios";
+import MealDetailsDialog from "./MealDetailsDialog";
 
 function MealCard({
   mealName,
@@ -17,24 +18,28 @@ function MealCard({
   mealId,
   category,
   userId,
-  isFavoriteProp, // Prop to pre-set favorite state
-  disableFavoriteButton, // Prop to disable the favorite button
-  sx, // Accept custom styles as a prop
+  isFavoriteProp,
+  disableFavoriteButton,
+  sx,
 }) {
   const [isFavorite, setIsFavorite] = useState(isFavoriteProp);
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const description =
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam venenatis, lectus in bibendum malesuada, nisi magna auctor diam, id dapibus purus tortor ultrices felis. Donec fringilla euismod ipsum, non malesuada purus vulputate scelerisque. Sed fringilla, mi a porttitor efficitur, ipsum erat interdum diam, eget gravida dolor tellus non libero. ";
 
   const toggleFavorite = async () => {
-    if (disableFavoriteButton) return; // Do nothing if button is disabled
+    if (disableFavoriteButton) return;
 
     setIsFavorite(!isFavorite);
     console.log("Toggled favourite");
 
-    const email = localStorage.getItem("email"); // Get email from localStorage
+    const email = localStorage.getItem("email");
 
     if (!isFavorite && email) {
       try {
         const response = await axios.post("http://localhost:3001/addFavorite", {
-          email, // Pass email instead of userId
+          email,
           mealId,
           mealName,
           mealImage,
@@ -44,6 +49,14 @@ function MealCard({
         console.error("Error adding to favorites:", error);
       }
     }
+  };
+
+  const handleCardClick = () => {
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
   };
 
   return (
@@ -65,6 +78,7 @@ function MealCard({
             boxShadow: "0 6px 12px rgba(0, 0, 0, 0.2)",
           },
         }}
+        onClick={handleCardClick}
       >
         <CardMedia
           component="img"
@@ -114,6 +128,17 @@ function MealCard({
           {mealName}
         </Typography>
       </CardContent>
+
+      <MealDetailsDialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        meal={{
+          mealName,
+          mealImage,
+          category,
+          description,
+        }}
+      />
     </div>
   );
 }
