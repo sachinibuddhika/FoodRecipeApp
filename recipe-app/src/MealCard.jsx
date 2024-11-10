@@ -11,19 +11,30 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import axios from "axios";
 
-function MealCard({ mealName, mealImage, mealId, category, userId }) {
-  const [isFavorite, setIsFavorite] = useState(false);
+function MealCard({
+  mealName,
+  mealImage,
+  mealId,
+  category,
+  userId,
+  isFavoriteProp, // Prop to pre-set favorite state
+  disableFavoriteButton, // Prop to disable the favorite button
+  sx, // Accept custom styles as a prop
+}) {
+  const [isFavorite, setIsFavorite] = useState(isFavoriteProp);
 
   const toggleFavorite = async () => {
+    if (disableFavoriteButton) return; // Do nothing if button is disabled
+
     setIsFavorite(!isFavorite);
     console.log("Toggled favourite");
 
-    const email = localStorage.getItem("email");
+    const email = localStorage.getItem("email"); // Get email from localStorage
 
     if (!isFavorite && email) {
       try {
         const response = await axios.post("http://localhost:3001/addFavorite", {
-          email,
+          email, // Pass email instead of userId
           mealId,
           mealName,
           mealImage,

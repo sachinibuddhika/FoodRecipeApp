@@ -33,19 +33,28 @@ function Favourite({ userId }) {
 
   return (
     <div>
-      <Box sx={{ padding: 4 }}>
-        <Typography variant="h4" gutterBottom>
-          Your Favorites
-        </Typography>
-
+      <Box sx={{ padding: 4, marginLeft: "275px", marginRight: "275px" }}>
         {favorites.length === 0 ? (
           <Typography variant="body1">
             You don't have any favorites yet.
           </Typography>
         ) : (
-          <Grid container spacing={4}>
+          <Grid
+            container
+            spacing={4}
+            sx={{
+              justifyContent: "flex-start",
+            }}
+          >
             {favorites.map((favorite) => (
-              <Grid item xs={12} sm={6} md={4} key={favorite.mealId}>
+              <Grid
+                item
+                key={favorite.mealId}
+                sx={{
+                  width: "calc(100% / 5 )",
+                  maxWidth: "250px",
+                }}
+              >
                 <MealCard
                   mealName={favorite.mealName}
                   mealImage={favorite.mealImage}
@@ -53,6 +62,7 @@ function Favourite({ userId }) {
                   category={favorite.category}
                   userId={favorite.userId}
                   isFavoriteProp={true}
+                  disableFavoriteButton={true}
                 />
               </Grid>
             ))}
