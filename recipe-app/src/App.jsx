@@ -6,6 +6,7 @@ import Login from "./Login";
 import Home from "./Home";
 import Favourite from "./Favourite";
 import Navbar from "./Navbar";
+import { Outlet } from "react-router-dom";
 
 function App() {
   return (
@@ -28,10 +29,15 @@ function LayoutWithNavbar() {
   return (
     <>
       <Navbar />
-      <Routes>
-        <Route path="/home" element={<Home />} />
-        <Route path="/favourite" element={<Favourite />} />
-      </Routes>
+
+      <div
+        style={{
+          paddingTop: "80px",
+          backgroundColor: "#f0f0f0",
+        }}
+      >
+        <Outlet />
+      </div>
     </>
   );
 }
