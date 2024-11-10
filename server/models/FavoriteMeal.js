@@ -5,6 +5,7 @@ const FavoriteMealSchema = new mongoose.Schema({
   mealId: { type: Number, required: true },
   mealName: { type: String, required: true },
   mealImage: { type: String, required: true },
+  
 });
 
 const FavoriteMealModel = mongoose.model("FavoriteMeal", FavoriteMealSchema);

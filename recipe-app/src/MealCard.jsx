@@ -17,7 +17,7 @@ function MealCard({
   mealImage,
   mealId,
   category,
-  userId,
+
   isFavoriteProp,
   disableFavoriteButton,
   sx,
